@@ -8,6 +8,17 @@ import {
 } from 'lucide-react';
 import { IConversation, IEmptyChat, IMessage, TSidebarMenu } from './types';
 
+enum ERole {
+  user = 'user',
+  assistant = 'assistant',
+  system = 'system',
+}
+enum EStatus {
+  completed = 'completed',
+  loading = 'loading',
+  delivered = 'delivered',
+}
+
 const SIDEBAR_MENU: TSidebarMenu = [
   {
     id: 1,
@@ -54,27 +65,27 @@ const SIDEBAR_MENU: TSidebarMenu = [
 const MESSAGES: IMessage[] = [
   {
     id: 1,
-    role: 'user',
+    role: ERole.user,
     content: 'Hello',
-    status: 'completed',
+    status: EStatus.completed,
   },
   {
     id: 2,
-    role: 'assistant',
+    role: ERole.assistant,
     content: 'Hi, how can I help you?',
-    status: 'completed',
+    status: EStatus.completed,
   },
   {
     id: 3,
-    role: 'user',
+    role: ERole.user,
     content: 'I want to book a flight',
-    status: 'completed',
+    status: EStatus.completed,
   },
   {
     id: 4,
-    role: 'assistant',
+    role: ERole.assistant,
     content: 'Sure, where would you like to go?',
-    status: 'completed',
+    status: EStatus.completed,
   },
 ];
 
@@ -105,4 +116,5 @@ const CONVERSATIONS: IConversation[] = [
     messages: MESSAGES,
   },
 ];
-export { SIDEBAR_MENU, MESSAGES, CONVERSATIONS, EMPTY_CHAT };
+
+export { SIDEBAR_MENU, MESSAGES, CONVERSATIONS, EMPTY_CHAT, ERole, EStatus };

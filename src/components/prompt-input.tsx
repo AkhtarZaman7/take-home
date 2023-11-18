@@ -4,20 +4,21 @@ import { Trash, Mic, CornerDownLeft } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useMessages } from '@/hooks/useMessages';
 import { IMessage } from '@/lib/types';
+import { ERole, EStatus } from "@/lib/constants";
 
 export default function PromptInput() {
   const { clearAllMessages, addNewMessage, messages } = useMessages();
   const [value, setValue] = React.useState('');
   const lastMessage = messages[messages.length - 1];
-  const isLoading = lastMessage?.status === 'loading';
+  const isLoading = lastMessage?.status === EStatus.loading;
 
   const createNewMessage = () => {
     if (!value || isLoading) return;
     const newMessage: IMessage = {
       id: lastMessage ? lastMessage.id + 1 : 1,
       content: value,
-      status: 'completed',
-      role: 'user',
+      status: EStatus.completed,
+      role: ERole.user,
     };
     addNewMessage(newMessage);
     setValue('');

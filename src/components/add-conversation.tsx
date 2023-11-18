@@ -9,6 +9,7 @@ export default function AddConversation() {
     useMessages();
 
   const onAddConversation = () => {
+    if(messages.length === 0) return;
     const id = conversations.length + 1;
     addNewConversation({ id, messages });
     clearAllMessages();

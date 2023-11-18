@@ -1,3 +1,5 @@
+import { ERole, EStatus } from './constants';
+
 type TSidebarItem = {
   id: number;
   title: string;
@@ -6,9 +8,9 @@ type TSidebarItem = {
 
 type IMessage = {
   id: number;
-  role: 'user' | 'assistant' | 'system';
+  role: ERole.user | ERole.assistant | ERole.system;
   content: string;
-  status: 'loading' | 'delivered' | 'completed';
+  status: EStatus.completed | EStatus.loading | EStatus.delivered;
 };
 type IConversation = {
   id: number;

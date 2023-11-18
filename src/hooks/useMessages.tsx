@@ -1,4 +1,4 @@
-import { CONVERSATIONS, MESSAGES } from '@/lib/constants';
+import { CONVERSATIONS, ERole, EStatus, MESSAGES } from '@/lib/constants';
 import { IConversation, IMessage, IMessageContext } from '@/lib/types';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useMutation } from '@apollo/client';
@@ -79,8 +79,8 @@ export function MessageProvider({ children }: { children: React.ReactNode }) {
       {
         id: message.id + 1,
         content: '',
-        status: 'loading',
-        role: 'assistant',
+        status: EStatus.loading,
+        role: ERole.assistant,
       },
     ]);
 
@@ -89,7 +89,7 @@ export function MessageProvider({ children }: { children: React.ReactNode }) {
         messages: [
           ...previousMessages,
           {
-            role: 'user',
+            role: ERole.user,
             content: message.content,
           },
         ],
@@ -109,7 +109,7 @@ export function MessageProvider({ children }: { children: React.ReactNode }) {
 
   const updateMessageStatus = (
     messageId: number,
-    status: 'loading' | 'delivered' | 'completed'
+    status: EStatus.completed | EStatus.delivered | EStatus.loading
   ) => {
     setMessages((prevMessages) => {
       return prevMessages.map((message) => {
@@ -124,7 +124,7 @@ export function MessageProvider({ children }: { children: React.ReactNode }) {
     setMessages((prevMessages) => {
       return prevMessages.map((message) => {
         if (message.id === messageId) {
-          return { ...message, content, status: 'delivered' };
+          return { ...message, content, status: EStatus.delivered };
         }
         return message;
       });
