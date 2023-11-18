@@ -2,7 +2,12 @@
 import Sidebar from '@/components/sidebar';
 import { MessageProvider } from '@/hooks/useMessages';
 import React from 'react';
-
+import { ApolloProvider } from '@apollo/client';
+import { ApolloClient, InMemoryCache } from '@apollo/client';
+const client = new ApolloClient({
+  uri: '/api/graphql', // Replace with the correct API endpoint URL
+  cache: new InMemoryCache(),
+});
 export default function layout({
   children,
   chat,
@@ -13,14 +18,16 @@ export default function layout({
   conversations: any;
 }) {
   return (
-    <MessageProvider>
-      <div className='flex'>
-        <Sidebar />
-        <div className='flex flex-1 m-8 rounded-lg bg-[#23252B]'>
-          {chat}
-          {conversations}
+    <ApolloProvider client={client}>
+      <MessageProvider>
+        <div className='flex max-h-[100vh]'>
+          <Sidebar />
+          <div className='flex flex-1 m-8 rounded-lg bg-[#23252B]'>
+            {chat}
+            {conversations}
+          </div>
         </div>
-      </div>
-    </MessageProvider>
+      </MessageProvider>
+    </ApolloProvider>
   );
 }

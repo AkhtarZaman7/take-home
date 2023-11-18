@@ -1,8 +1,17 @@
 import { CONVERSATIONS, MESSAGES } from '@/lib/constants';
 import { IConversation, IMessage, IMessageContext } from '@/lib/types';
-import React, { createContext, useContext, useState } from 'react';
-
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useMutation } from '@apollo/client';
+import gql from 'graphql-tag';
 // Create a context to store messages and conversations
+const SEND_MUTATION = gql`
+  mutation sendMessage($messages: [MessageInput]) {
+    sendMessage(messages: $messages) {
+      role
+      content
+    }
+  }
+`;
 
 const defaultContext: IMessageContext = {
   messages: [],
@@ -14,7 +23,7 @@ const defaultContext: IMessageContext = {
   deleteMessage: (messageId) => {},
   clearAllMessages: () => {},
   updateMessageStatus: (messageId, status) => {},
-  removeAllConversations: () => {}
+  removeAllConversations: () => {},
 };
 
 const MessageContext = createContext<IMessageContext>(defaultContext);
@@ -28,7 +37,16 @@ export function useMessages() {
 }
 
 export function MessageProvider({ children }: { children: React.ReactNode }) {
-  const [messages, setMessages] = useState<IMessage[]>([]);
+  const [
+    sendNewMessage,
+    { data: messageResponse, loading: messageLoading, error: messageError },
+  ] = useMutation(SEND_MUTATION);
+
+  const [messages, setMessages] = useState<IMessage[]>([
+    ...MESSAGES,
+    ...MESSAGES,
+    ...MESSAGES,
+  ] as IMessage[]);
   const [conversations, setConversations] = useState<IConversation[]>(
     CONVERSATIONS as IConversation[]
   );
@@ -51,6 +69,12 @@ export function MessageProvider({ children }: { children: React.ReactNode }) {
   };
 
   const addNewMessage = (message: IMessage) => {
+    const previousMessages = messages.map((item) => {
+      return {
+        content: item.content,
+        role: item.role,
+      };
+    });
     setMessages((prevMessages) => [...prevMessages, message]);
     setMessages((prevMessages) => [
       ...prevMessages,
@@ -61,6 +85,18 @@ export function MessageProvider({ children }: { children: React.ReactNode }) {
         role: 'assistant',
       },
     ]);
+
+    sendNewMessage({
+      variables: {
+        messages: [
+          ...previousMessages,
+          {
+            role: 'user',
+            content: message.content,
+          },
+        ],
+      },
+    });
   };
 
   const deleteMessage = (messageId: number) => {
@@ -86,10 +122,29 @@ export function MessageProvider({ children }: { children: React.ReactNode }) {
       });
     });
   };
+  const updateMessageContent = (messageId: number, content: string) => {
+    setMessages((prevMessages) => {
+      return prevMessages.map((message) => {
+        if (message.id === messageId) {
+          return { ...message, content, status: 'delivered' };
+        }
+        return message;
+      });
+    });
+  };
 
   const removeAllConversations = () => {
     setConversations([]);
   };
+
+  useEffect(() => {
+    if (messageResponse) {
+      const assistantMessage = messageResponse.sendMessage[0].content;
+      const lastMessage = messages[messages.length - 1];
+      updateMessageContent(lastMessage.id, assistantMessage);
+    }
+  }, [messageResponse]);
+
   return (
     <MessageContext.Provider
       value={{
@@ -102,7 +157,7 @@ export function MessageProvider({ children }: { children: React.ReactNode }) {
         deleteMessage,
         clearAllMessages,
         updateMessageStatus,
-        removeAllConversations
+        removeAllConversations,
       }}
     >
       {children}

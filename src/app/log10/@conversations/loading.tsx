@@ -2,6 +2,9 @@ import React from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default async function loading() {
+  
+  // fetching dummy data to showcase the laoding state of a parallel routing
+
   const res = await fetch('https://jsonplaceholder.typicode.com/todos');
   return (
     <div className='flex flex-[1] p-4 flex-col justify-between'>
