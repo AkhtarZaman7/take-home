@@ -44,8 +44,6 @@ export function MessageProvider({ children }: { children: React.ReactNode }) {
 
   const [messages, setMessages] = useState<IMessage[]>([
     ...MESSAGES,
-    ...MESSAGES,
-    ...MESSAGES,
   ] as IMessage[]);
   const [conversations, setConversations] = useState<IConversation[]>(
     CONVERSATIONS as IConversation[]
